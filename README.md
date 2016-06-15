@@ -18,5 +18,6 @@ Similar to the disclaimer on Bees With Machine Guns, this is pretty much an easy
  
 ####Future Work
 - More detail on usage and flags in the readme
+- Learn how to create go binaries
 - Output reports from the test. Currently just outputs the `ab` tool's output to stdout.
 - General refactoring. As I learn more about golang, I feel quite sure that I'll find some bonehead moves I've made in this project.
