@@ -66,11 +66,9 @@ func main() {
 	ParseFlags(serverStruct)
 
 	//Create servers and floating IPs as necessary
-	provider, _ := openstack.CreateClient()
+	fmt.Printf("Beginning creation of servers...\n")
+	provider := openstack.CreateClient()
 	serverIDs, floatingIDs := openstack.CreateServers(provider, serverStruct.Count, serverStruct.ImageName, serverStruct.FlavorName, serverStruct.Network, serverStruct.FloatingNetwork, serverStruct.KeyName)
-
-	fmt.Println(serverIDs)
-	fmt.Println(floatingIDs)
 
 	//Retrieve network info
 	var ipList []string
@@ -79,8 +77,10 @@ func main() {
 	} else {
 		ipList = openstack.GetPrivateIPs(provider, serverIDs)
 	}
-	fmt.Println(ipList)
+	fmt.Printf("Retrieved the following IPs: %v\n", ipList)
 
+	//Attack!
+	fmt.Printf("Beginning attack...\n")
 	var wg sync.WaitGroup
 	wg.Add(len(ipList))
 
@@ -90,10 +90,10 @@ func main() {
 			attack(ipList[i], serverStruct.SSHUser, serverStruct.SSHKeyPath, serverStruct.Endpoint, serverStruct.SimulRequests, serverStruct.TotalRequests)
 		}(i)
 	}
-
 	wg.Wait()
 
 	//Cleanup servers after attack
+	fmt.Printf("Beginning cleanup of servers...\n")
 	openstack.DeleteServers(provider, serverIDs)
 	if len(floatingIDs) > 0 {
 		openstack.DeleteFloatingIPs(provider, floatingIDs)

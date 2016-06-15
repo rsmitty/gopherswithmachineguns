@@ -1,23 +1,23 @@
 package openstack
 
 import (
-	"fmt"
+	"log"
 
 	"github.com/rackspace/gophercloud"
 	"github.com/rackspace/gophercloud/openstack"
 )
 
-func CreateClient() (*gophercloud.ProviderClient, error) {
+func CreateClient() *gophercloud.ProviderClient {
 
 	authOpts, err := openstack.AuthOptionsFromEnv()
 	if err != nil {
-		fmt.Println("Unable to retrieve auth options from environment: %s", err)
+		log.Fatalf("Unable to retrieve auth options from environment: %s", err)
 	}
 
 	provider, err := openstack.AuthenticatedClient(authOpts)
 	if err != nil {
-		fmt.Println("Unable to retrieve openstack client: %s", err)
+		log.Fatalf("Unable to retrieve openstack client: %s", err)
 	}
 
-	return provider, nil
+	return provider
 }

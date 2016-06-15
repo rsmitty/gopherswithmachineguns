@@ -2,6 +2,7 @@ package openstack
 
 import (
 	"fmt"
+	"log"
 	"strconv"
 
 	"github.com/rackspace/gophercloud"
@@ -15,7 +16,7 @@ func ListServers(provider *gophercloud.ProviderClient) {
 
 	client, err := openstack.NewComputeV2(provider, gophercloud.EndpointOpts{})
 	if err != nil {
-		fmt.Println("Unable to create a compute client: %s\n", err)
+		log.Fatalf("Unable to create a compute client: %s\n", err)
 	}
 	opts := servers.ListOpts{}
 
@@ -25,7 +26,7 @@ func ListServers(provider *gophercloud.ProviderClient) {
 		serverList, _ := servers.ExtractServers(page)
 
 		for _, s := range serverList {
-			fmt.Println(s.Name)
+			log.Fatalf(s.Name)
 		}
 		return true, nil
 	})
@@ -36,7 +37,7 @@ func CreateServers(provider *gophercloud.ProviderClient, count int, image string
 
 	client, err := openstack.NewComputeV2(provider, gophercloud.EndpointOpts{})
 	if err != nil {
-		fmt.Printf("Unable to create a compute client: %s\n", err)
+		log.Fatalf("Unable to create a compute client: %s\n", err)
 	}
 
 	netid := GetNetworkId(provider, networkname)
@@ -52,7 +53,7 @@ func CreateServers(provider *gophercloud.ProviderClient, count int, image string
 
 	for i := 0; i < count; i++ {
 		serveropts := servers.CreateOpts{
-			Name:       "gophertest-" + strconv.Itoa(i),
+			Name:       "gwmg-" + strconv.Itoa(i),
 			ImageName:  image,
 			FlavorName: flavor,
 			Networks:   servernetwork,
@@ -63,9 +64,9 @@ func CreateServers(provider *gophercloud.ProviderClient, count int, image string
 			keyname,
 		}).Extract()
 		if err != nil {
-			fmt.Println("Unable to create a compute client: %s\n", err)
+			log.Fatalf("Unable to create a compute client: %s\n", err)
 		}
-		fmt.Printf("Server %s created. ID is %s\n", server.Name, server.ID)
+		fmt.Printf("Server %v created\n", i)
 
 		if floatingnetwork != "" {
 			floatingID := SetFloatingIP(provider, networkname, floatingnetwork, server.ID)
@@ -82,12 +83,12 @@ func DeleteServers(provider *gophercloud.ProviderClient, serverIDs []string) {
 
 	client, err := openstack.NewComputeV2(provider, gophercloud.EndpointOpts{})
 	if err != nil {
-		fmt.Printf("Unable to create a compute client: %s\n", err)
+		log.Fatalf("Unable to create a compute client: %s\n", err)
 	}
 
 	for i := 0; i < len(serverIDs); i++ {
 
-		fmt.Printf("Deleting server %s\n", serverIDs[i])
+		fmt.Printf("Deleting server %v\n", i)
 		servers.Delete(client, serverIDs[i])
 	}
 }
@@ -95,16 +96,15 @@ func DeleteServers(provider *gophercloud.ProviderClient, serverIDs []string) {
 func GetPrivateIPs(provider *gophercloud.ProviderClient, serverIDs []string) []string {
 	client, err := openstack.NewComputeV2(provider, gophercloud.EndpointOpts{})
 	if err != nil {
-		fmt.Printf("Unable to create a compute client: %s\n", err)
+		log.Fatalf("Unable to create a compute client: %s\n", err)
 	}
 
 	var privateIPs []string
 	for i := 0; i < len(serverIDs); i++ {
-		fmt.Printf("Retrieving server %s data\n", serverIDs[i])
 		server, err := servers.Get(client, serverIDs[i]).Extract()
 
 		if err != nil {
-			fmt.Printf("Unable to retrieve server: %s\n", err)
+			log.Fatalf("Unable to retrieve server: %s\n", err)
 		}
 		privateIPs = append(privateIPs, server.AccessIPv4)
 

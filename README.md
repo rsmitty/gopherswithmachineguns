@@ -2,6 +2,8 @@
 
 This application is a spin of the very cool [Bees With Machine Guns](https://github.com/newsapps/beeswithmachineguns) project created by the Chicago Tribune. A couple of differences are immediately clear, however. This project is written in golang and targets OpenStack by making use of the Gophercloud tool to create and delete servers.
 
+[![asciicast](https://asciinema.org/a/8rq9et7xogidkcgv5mraddpoq.png)](https://asciinema.org/a/8rq9et7xogidkcgv5mraddpoq)
+
 ####Usage
 Most Openstack auth info can be set by simply sourcing your keystone rc file. However, this project expects many flags in order to complete the full lifecycle of testing. A sample run would look like:
 

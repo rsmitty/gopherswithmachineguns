@@ -39,7 +39,7 @@ func ConnectSSH(host string, user string, keypath string) *ssh.Session {
 		if err == nil {
 			break
 		} else {
-			fmt.Printf("Unable to establish connection. Retrying...\n")
+			fmt.Printf("Waiting to establish SSH...\n")
 			time.Sleep(10 * time.Second)
 			i += 10
 		}
@@ -47,7 +47,7 @@ func ConnectSSH(host string, user string, keypath string) *ssh.Session {
 
 	session, err := client.NewSession()
 	if err != nil {
-		panic("Failed to create session: " + err.Error())
+		log.Fatalf("Failed to create session: " + err.Error())
 	}
 	return session
 }
@@ -61,7 +61,7 @@ func IssueCommand(session *ssh.Session, command string) {
 	session.Stdout = &stdout
 	err := session.Run(command)
 	if err != nil {
-		panic("Failed to run: " + err.Error())
+		log.Fatalf("Failed to run: " + err.Error())
 	}
 	fmt.Println(stdout.String())
 }

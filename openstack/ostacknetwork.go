@@ -1,7 +1,7 @@
 package openstack
 
 import (
-	"fmt"
+	"log"
 	"time"
 
 	"github.com/rackspace/gophercloud"
@@ -16,27 +16,27 @@ func GetNetworkId(provider *gophercloud.ProviderClient, networkname string) stri
 
 	networkclient, err := openstack.NewNetworkV2(provider, gophercloud.EndpointOpts{})
 	if err != nil {
-		fmt.Printf("Unable to create network client:%s\n", err)
+		log.Fatalf("Unable to create network client:%s\n", err)
 	}
 
 	networkid, err := networks.IDFromName(networkclient, networkname)
 	if err != nil {
-		fmt.Printf("Unable to retrieve network id: %s\n", err)
+		log.Fatalf("Unable to retrieve network id: %s\n", err)
 	}
 
 	networkobj, err := networks.Get(networkclient, networkid).Extract()
 	if err != nil {
-		fmt.Printf("Unable to retrieve network: %s\n", err)
+		log.Fatalf("Unable to retrieve network: %s\n", err)
 	}
 
-	fmt.Printf("Network ID found: %s\n", networkobj.ID)
 	return networkobj.ID
 }
 
 func SetFloatingIP(provider *gophercloud.ProviderClient, networkname string, floatingname string, serverid string) string {
+
 	networkclient, err := openstack.NewNetworkV2(provider, gophercloud.EndpointOpts{})
 	if err != nil {
-		fmt.Printf("Unable to create network client:%s\n", err)
+		log.Fatalf("Unable to create network client:%s\n", err)
 	}
 
 	networkid := GetNetworkId(provider, networkname)
@@ -57,7 +57,7 @@ func SetFloatingIP(provider *gophercloud.ProviderClient, networkname string, flo
 		err = portpages.EachPage(func(page pagination.Page) (bool, error) {
 			portList, err := ports.ExtractPorts(page)
 			if err != nil {
-				fmt.Printf("Unable to extract ports: %s", err)
+				log.Fatalf("Unable to extract ports: %s", err)
 			}
 			for _, port := range portList {
 				portID = port.ID
@@ -73,30 +73,26 @@ func SetFloatingIP(provider *gophercloud.ProviderClient, networkname string, flo
 		timer += 10
 	}
 
-	fmt.Printf("found port id %s\n", portID)
-
-	f, err := floatingips.Create(networkclient, floatingips.CreateOpts{
+	flip, err := floatingips.Create(networkclient, floatingips.CreateOpts{
 		FloatingNetworkID: floatingnetworkid,
 		PortID:            portID,
 		FixedIP:           fixedIP,
 	}).Extract()
 	if err != nil {
-		fmt.Printf("Unable to create a floating IP: %s\n", err)
+		log.Fatalf("Unable to create a floating IP: %s\n", err)
 	}
 
-	fmt.Printf("attached floating ip %s\n", f.FloatingIP)
-	return f.ID
+	return flip.ID
 }
 
 func DeleteFloatingIPs(provider *gophercloud.ProviderClient, floatingIDs []string) {
 
 	networkclient, err := openstack.NewNetworkV2(provider, gophercloud.EndpointOpts{})
 	if err != nil {
-		fmt.Printf("Unable to create network client:%s\n", err)
+		log.Fatalf("Unable to create network client:%s\n", err)
 	}
 
 	for i := 0; i < len(floatingIDs); i++ {
-		fmt.Printf("Removing floating ip %s\n", floatingIDs[i])
 		floatingips.Delete(networkclient, floatingIDs[i])
 	}
 }
@@ -105,15 +101,14 @@ func GetFloatingIPs(provider *gophercloud.ProviderClient, floatingIDs []string) 
 
 	networkclient, err := openstack.NewNetworkV2(provider, gophercloud.EndpointOpts{})
 	if err != nil {
-		fmt.Printf("Unable to create network client:%s\n", err)
+		log.Fatalf("Unable to create network client:%s\n", err)
 	}
 
 	var floatingIPs []string
 	for i := 0; i < len(floatingIDs); i++ {
-		fmt.Printf("Retrieving floating ip %s data\n", floatingIDs[i])
 		flip, err := floatingips.Get(networkclient, floatingIDs[i]).Extract()
 		if err != nil {
-			fmt.Printf("Unable to retrieve floating ip: %s\n", err)
+			log.Fatalf("Unable to retrieve floating ip: %s\n", err)
 		}
 		floatingIPs = append(floatingIPs, flip.FloatingIP)
 
