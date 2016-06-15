@@ -15,6 +15,10 @@ go run main.go -count 3 -image "myimage" -flavor "m1.small" -network "private-ne
 
 All of these flags are more or less required, with the exception of floating-network, which is optional.
 
+#####Assumptions
+- The image you use has `ab` installed (Apache Benchmark)
+- The instances can function as expected by using the `default` security group in OpenStack
+
 ####Disclaimer
 Similar to the disclaimer on Bees With Machine Guns, this is pretty much an easy way to create a DDOS attack of an endpoint. Make sure you own said endpoint before using this tool.
  
