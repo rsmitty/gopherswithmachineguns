@@ -6,8 +6,8 @@ This application is a spin of the very cool [Bees With Machine Guns](https://git
 Most Openstack auth info can be set by simply sourcing your keystone rc file. However, this project expects many flags in order to complete the full lifecycle of testing. A sample run would look like:
 
 ```bash
-go run main.go -count 3 -image "myimage" -flavor "m1.small" -network "private-net" /
--floating-network "public-net" -keyname spencer-key -sshuser "ubuntu" -sshkey "/path/to/id_rsa" /
+go run main.go -count 3 -image "myimage" -flavor "m1.small" -network "private-net" \
+-floating-network "public-net" -keyname spencer-key -sshuser "ubuntu" -sshkey "/path/to/id_rsa" \
 -endpoint "http://endpoint-to-test.com/" -sim-reqs 250  -tot-reqs 10000
 ```
 
