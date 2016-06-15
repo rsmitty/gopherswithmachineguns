@@ -4,7 +4,7 @@ This application is a spin of the very cool [Bees With Machine Guns](https://git
 
 [![asciicast](https://asciinema.org/a/8rq9et7xogidkcgv5mraddpoq.png)](https://asciinema.org/a/8rq9et7xogidkcgv5mraddpoq)
 
-####Usage
+###Usage
 Most Openstack auth info can be set by simply sourcing your keystone rc file. However, this project expects many flags in order to complete the full lifecycle of testing. A sample run would look like:
 
 ```bash
@@ -19,10 +19,10 @@ All of these flags are more or less required, with the exception of floating-net
 - The image you use has `ab` installed (Apache Benchmark)
 - The instances can function as expected by using the `default` security group in OpenStack
 
-####Disclaimer
+###Disclaimer
 Similar to the disclaimer on Bees With Machine Guns, this is pretty much an easy way to create a DDOS attack of an endpoint. Make sure you own said endpoint before using this tool.
  
-####Future Work
+###Future Work
 - More detail on usage and flags in the readme
 - Learn how to create go binaries
 - Output reports from the test. Currently just outputs the `ab` tool's output to stdout.
